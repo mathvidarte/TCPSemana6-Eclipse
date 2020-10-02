@@ -9,6 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+
+import model.Usuario;
 import processing.core.PApplet;
 
 public class Main extends PApplet{
@@ -17,7 +20,9 @@ public class Main extends PApplet{
 	private Socket socket;
 	private BufferedWriter write;
 	private BufferedReader read;
+	//private Usuario [] users;
 	private ArrayList <Usuario> users;
+	private int pantalla;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -30,17 +35,28 @@ public class Main extends PApplet{
 	
 	public void setup () {
 		initServer();
-		users = new ArrayList <Usuario>();
+		pantalla = 0;
 		
-		users.add(new Usuario ("mattvidarte:matheus123"));
-		users.add(new Usuario ("lauraleon:leon123"));
-		users.add(new Usuario ("davidVS:vsDavid"));
+		
 			
 		
 	}
 	
 	public void draw () {
 		background (255);
+		switch (pantalla) {
+			case 0:
+				fill (0);
+				textSize (20);
+				textAlign(CENTER);
+				text("Ingrese usuario y contraseña", 250, 250);
+				break;
+			case 1:
+				fill (0);
+				textSize (20);
+				textAlign(CENTER);
+				text("Bienvenido", 250, 250);
+		}
 		
 	}
 	
@@ -65,21 +81,35 @@ public class Main extends PApplet{
 						
 						while (true) {
 							String line = read.readLine();
-							/*String [] part = line.split(":");
-							String userr = part[0];
-							String passdwordd = part [1];*/
 							
-							for (int i = 0; i<users.size(); i++) {
+							Gson gson = new Gson();
+							Usuario usuario = gson.fromJson(line, Usuario.class);
+							
+							
+							
+							users = new ArrayList <Usuario>();
+							users.add(new Usuario ("mattvidarte","matheus123"));
+							users.add(new Usuario ("lauraleon","leon123"));
+							users.add(new Usuario ("davidVS","vsDavid"));
+							
+							for (int i = 0; i< users.size(); i++) {
+								if (usuario.getUser().equals(users.get(i).getUser())) {
+									if (usuario.getPassword().equals(users.get(i).getPassword())) {
+									pantalla = 1;
+									sendMessage ("Exito");
 									
-								if (line.equals(users)) {
-									fill (0);
-									textSize(50);
-									text("Bienvenido", 250,250);
+								} else {
+									sendMessage ("Noes"); 
+								}
+								
 								}
 							}
 							
+							
 							System.out.println("mensaje recibido:"+line);
 						}
+						
+						
 						
 						
 								
@@ -91,6 +121,19 @@ public class Main extends PApplet{
 					
 				}
 				).start();
+	}
+	
+	public void sendMessage (String msg) {
+		new Thread (
+                () -> {
+                    try {
+                        write.write(msg+"\n");
+                        write.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        ).start();
 	}
 	
 	
