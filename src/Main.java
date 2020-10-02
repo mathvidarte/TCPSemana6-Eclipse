@@ -93,16 +93,18 @@ public class Main extends PApplet{
 							users.add(new Usuario ("davidVS","vsDavid"));
 							
 							for (int i = 0; i< users.size(); i++) {
-								if (usuario.getUser().equals(users.get(i).getUser())) {
+								if (usuario.getUser().equals(users.get(i).getUser()) ) {
 									if (usuario.getPassword().equals(users.get(i).getPassword())) {
 									pantalla = 1;
 									sendMessage ("Exito");
 									
-								} else {
-									sendMessage ("Noes"); 
 								}
 								
 								}
+								
+								 else {
+										sendMessage ("Noes"); 
+									}
 							}
 							
 							
